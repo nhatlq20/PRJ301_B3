@@ -6,13 +6,14 @@ package dal;
 
 import java.util.List;
 import model.Student;
-import org.apache.tomcat.dbcp.dbcp2.PoolingConnection;
 import java.sql.*;
 import java.util.ArrayList;
 
 /**
+ * Data Access Object (DAO) for {@link Student}.
  *
- * @author qnhat
+ * <p>Provides methods to retrieve and modify student data from the database
+ * using the shared JDBC {@code Connection} from {@link DBContext}.</p>
  */
 public class StudentDAO extends DBContext {
 
@@ -22,7 +23,11 @@ public class StudentDAO extends DBContext {
     private final String REMOVE_STUDENT_BY_ID_SQL = "DELETE FROM [dbo].[Student]\n"
             + "      WHERE StudentID = ?";
 
-    //b2 : tạo hàm để tiến hành chạy câu lệnh sql vừa taoj và lấy keets quả
+    /**
+     * Retrieves all students from the database.
+     *
+     * @return list of students; {@code null} if a database error occurs
+     */
     public List<Student> getListStudent() {
         List<Student> res = new ArrayList<>();
         try {
@@ -30,12 +35,16 @@ public class StudentDAO extends DBContext {
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                Student std = new Student(rs.getString("StudentID"),
+                // Map columns -> constructor parameters in correct order
+                // Student(String id, String fullName, String gender, String dob, String email, String phone)
+                Student std = new Student(
+                        rs.getString("StudentID"),
                         rs.getString("FullName"),
-                        rs.getString("DOB"),
                         rs.getString("Gender"),
+                        rs.getString("DOB"),
                         rs.getString("Email"),
-                        rs.getString("Phone"));
+                        rs.getString("Phone")
+                );
                 res.add(std);
             }
 
@@ -45,6 +54,12 @@ public class StudentDAO extends DBContext {
         return res;
     }
 
+    /**
+     * Deletes a student by identifier.
+     *
+     * @param studentId identifier to delete
+     * @return {@code true} if at least one row was affected; otherwise {@code false}
+     */
     public boolean removeStudentById(String studentId) {
         try {
             PreparedStatement stm = c.prepareStatement(REMOVE_STUDENT_BY_ID_SQL);

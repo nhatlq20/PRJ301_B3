@@ -16,8 +16,10 @@ import java.util.List;
 import model.Student;
 
 /**
+ * Main servlet acting as a simple controller for the application.
  *
- * @author qnhat
+ * <p>Handles HTTP requests and coordinates with the DAO layer to retrieve
+ * data, then forwards to JSP views for rendering.</p>
  */
 @WebServlet(name = "MainController", urlPatterns = {"/MainController"})
 public class MainController extends HttpServlet {
@@ -44,9 +46,14 @@ public class MainController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Instantiate DAO and load data from database
         StudentDAO dao = new StudentDAO();
         List<Student> listStd = dao.getListStudent();
+
+        // Put data into request scope for the JSP to consume
         request.setAttribute("listStd", listStd);
+
+        // Dispatch to view
         request.getRequestDispatcher("index.jsp").forward(request, response);
         
     }
